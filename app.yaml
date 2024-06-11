@@ -1,0 +1,15 @@
+runtime: go122 # Replace with your Go runtime version
+
+instance_class: F1  # Choose an appropriate instance class (F1 is the smallest)
+
+automatic_scaling:
+  max_instances: 1  # Ensure only one instance is used
+  min_idle_instances: 0  # This setting helps to control costs by not keeping idle instances
+
+handlers:
+- url: /.*
+  script: auto
+
+env_variables:
+  REDIS_HOST: "value"
+  PORT: 80

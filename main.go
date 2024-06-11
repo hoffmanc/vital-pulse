@@ -13,6 +13,35 @@ import (
 func main() {
 	app := fiber.New()
 
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
+
+	api := app.Group("/api/v1")
+
+	api.Post("/posts", func(c *fiber.Ctx) error {
+		// err := rdb.Set(ctx, "email", c.Body(), 0).Err()
+		// if err != nil {
+		// 	return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		// }
+
+		return c.SendStatus(fiber.StatusOK)
+	})
+
+	api.Get("/posts", func(c *fiber.Ctx) error {
+		// post, err := rdb.Get(ctx, "email").Result()
+		// if err != nil {
+		// 	return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		// }
+
+		return c.SendString("foop")
+	})
+
+	port := os.Getenv("PORT")
+	log.Fatal(app.Listen(fmt.Sprintf(":%s", port)))
+}
+
+func initRdb() *redis.Client {
 	// Read Redis connection details from environment variables
 	redisHost := os.Getenv("REDIS_HOST")
 	redisPort := os.Getenv("REDIS_PORT")
@@ -29,29 +58,5 @@ func main() {
 		log.Fatalf("Could not connect to Redis: %v", err)
 	}
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
-
-	api := app.Group("/api/v1")
-
-	api.Post("/posts", func(c *fiber.Ctx) error {
-		err := rdb.Set(ctx, "email", c.Body(), 0).Err()
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
-		}
-
-		return c.SendStatus(fiber.StatusOK)
-	})
-
-	api.Get("/posts", func(c *fiber.Ctx) error {
-		post, err := rdb.Get(ctx, "email").Result()
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
-		}
-
-		return c.SendString(post)
-	})
-
-	log.Fatal(app.Listen(":3000"))
+	return rdb
 }
