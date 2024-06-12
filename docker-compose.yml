@@ -3,7 +3,7 @@
 services:
   app:
     build: .
-    command: air
+    command: air -c /app/air.toml
     ports:
       - "3000:3000"
     depends_on:
