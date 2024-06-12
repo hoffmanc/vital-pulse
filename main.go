@@ -52,14 +52,10 @@ func initRdb() (*redis.Client, context.Context) {
 
 	pwd, _ := u.User.Password()
 
-	log.Println("u.Host", u.Host)
-	log.Println("u.User.String()", u.User.String())
-	log.Println("u.User.Password()", pwd)
-
 	// Create Redis client
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     u.Host, // also has port for some reason
-		Username: u.User.String(),
+		Username: u.User.Username(),
 		Password: pwd,
 	})
 
