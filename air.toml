@@ -1,7 +1,7 @@
 # Config file for Air (https://github.com/cosmtrek/air)
 [build]
-  bin = "app" # Binary name
-  cmd = "go build -o app main.go" # Command to build your app
+  bin = "bin/app" # Binary name
+  cmd = "go build -o bin/app main.go" # Command to build your app
   include_ext = ["go", "tpl", "tmpl", "html"] # Extensions to watch
   exclude_dir = ["vendor", "tmp", ".git", "node_modules"] # Directories to ignore
   exclude_file = [] # Specific files to ignore
@@ -13,7 +13,7 @@
   level = "debug"
 
 [serve]
-  cmd = "./app" # Command to run your app
+  cmd = "bin/app" # Command to run your app
   delay = "500ms" # Delay before starting the app after a change
   grace = "100ms" # Grace period before killing the app after a change
   ignore_error = false

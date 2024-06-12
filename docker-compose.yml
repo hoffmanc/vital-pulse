@@ -11,7 +11,7 @@ services:
     volumes:
       - ".:/app"
     environment:
-      REDIS_HOST: redis
+      REDISCLOUD_URL: "redis://redis:6379"
       REDIS_PORT: 6379
       PORT: 3000
 

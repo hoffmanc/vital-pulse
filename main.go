@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 
 	"github.com/go-redis/redis/v8"
@@ -12,6 +13,7 @@ import (
 
 func main() {
 	app := fiber.New()
+	rdb, ctx := initRdb()
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
@@ -20,43 +22,50 @@ func main() {
 	api := app.Group("/api/v1")
 
 	api.Post("/posts", func(c *fiber.Ctx) error {
-		// err := rdb.Set(ctx, "email", c.Body(), 0).Err()
-		// if err != nil {
-		// 	return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
-		// }
+		err := rdb.Set(ctx, "email", c.Body(), 0).Err()
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		}
 
 		return c.SendStatus(fiber.StatusOK)
 	})
 
 	api.Get("/posts", func(c *fiber.Ctx) error {
-		// post, err := rdb.Get(ctx, "email").Result()
-		// if err != nil {
-		// 	return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
-		// }
+		post, err := rdb.Get(ctx, "email").Result()
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		}
 
-		return c.SendString("foop")
+		return c.SendString(post)
 	})
 
 	port := os.Getenv("PORT")
 	log.Fatal(app.Listen(fmt.Sprintf(":%s", port)))
 }
 
-func initRdb() *redis.Client {
-	// Read Redis connection details from environment variables
-	redisHost := os.Getenv("REDIS_HOST")
-	redisPort := os.Getenv("REDIS_PORT")
-	redisAddr := fmt.Sprintf("%s:%s", redisHost, redisPort)
+func initRdb() (*redis.Client, context.Context) {
+	// Parse the URL
+	u, err := url.Parse(os.Getenv("REDISCLOUD_URL"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("u.Host", u.Host)
+
+	pwd, _ := u.User.Password()
 
 	// Create Redis client
 	rdb := redis.NewClient(&redis.Options{
-		Addr: redisAddr,
+		Addr:     u.Host, // also has port for some reason
+		Username: u.User.String(),
+		Password: pwd,
 	})
 
 	ctx := context.Background()
-	_, err := rdb.Ping(ctx).Result()
+	_, err = rdb.Ping(ctx).Result()
 	if err != nil {
 		log.Fatalf("Could not connect to Redis: %v", err)
 	}
 
-	return rdb
+	return rdb, ctx
 }
