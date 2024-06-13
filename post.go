@@ -48,6 +48,7 @@ func searchPosts(rdb *redis.Client, search string) ([]Message, int, error) {
 		}
 
 		if batch < 100 {
+			i += batch
 			break
 		}
 		i += 100
