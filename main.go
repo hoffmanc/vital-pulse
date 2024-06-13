@@ -17,6 +17,7 @@ import (
 type Message struct {
 	Id         string    `json:"id"`
 	Body       string    `json:"body"`
+	From       string    `json:"from"`
 	Subject    string    `json:"subject"`
 	ReceivedAt GmailTime `json:"receivedAt"`
 }
