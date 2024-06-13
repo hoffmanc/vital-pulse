@@ -141,10 +141,8 @@ func searchPosts(rdb *redis.Client, s string) ([]Message, int, error) {
 				log.Println("json.Unmarshal", err)
 			}
 
-			for _, m := range msgs {
-				if ptn.MatchString(m.Body) {
-					msgs = append(msgs, m)
-				}
+			if ptn.MatchString(msg.Body) {
+				msgs = append(msgs, msg)
 			}
 		}
 
