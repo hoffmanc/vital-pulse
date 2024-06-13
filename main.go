@@ -113,10 +113,15 @@ func searchPosts(rdb *redis.Client, s string) ([]Message, error) {
 	}
 
 	ctx := context.Background()
+	keys, err := rdb.Keys(ctx, "2024*").Result()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
 	var i int64 = 0
 	for {
 		msgJSON, _ := rdb.GetRange(ctx, "2024*", i, i+100).Result()
-		log.Println(msgJSON)
+		log.Println("here", msgJSON)
 		var msg Message
 		err := json.Unmarshal([]byte(msgJSON), &msg)
 		if err != nil {
