@@ -13,7 +13,7 @@ func searchPosts(rdb *redis.Client, search string) ([]Message, int, error) {
 	msgs := []Message{}
 
 	ctx := context.Background()
-	keys, err := rdb.Keys(ctx, "2024*").Result()
+	keys, err := rdb.Keys(ctx, "*").Result()
 	if err != nil {
 		log.Println("rdb.Keys", err)
 		return msgs, 0, err
