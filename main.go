@@ -63,7 +63,7 @@ func main() {
 	})
 
 	api.Get("/search", func(c *fiber.Ctx) error {
-		msgs, err := searchPosts(rdb, c.Query("search", ""))
+		msgs, searched, err := searchPosts(rdb, c.Query("search", ""))
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 		}
@@ -72,7 +72,7 @@ func main() {
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 		}
-		return c.SendString(string(jsonData))
+		return c.SendString(fmt.Sprintf(`{ "searched": %d, "messages": %s }`, searched, msgs))
 	})
 
 	port := os.Getenv("PORT")
@@ -104,20 +104,20 @@ func initRdb() (*redis.Client, context.Context) {
 	return rdb, ctx
 }
 
-func searchPosts(rdb *redis.Client, s string) ([]Message, error) {
+func searchPosts(rdb *redis.Client, s string) ([]Message, int, error) {
 	msgs := []Message{}
 
 	ptn, err := regexp.Compile(s)
 	if err != nil {
 		log.Println("regexp.Compile", err)
-		return msgs, err
+		return msgs, 0, err
 	}
 
 	ctx := context.Background()
 	keys, err := rdb.Keys(ctx, "2024*").Result()
 	if err != nil {
 		log.Println("rdb.Keys", err)
-		return msgs, err
+		return msgs, 0, err
 	}
 
 	var i int64 = 0
@@ -126,6 +126,7 @@ func searchPosts(rdb *redis.Client, s string) ([]Message, error) {
 		if len(keys[i:]) < int(batch) {
 			batch = int64(len(keys[i:]))
 		}
+		log.Println("batch", batch)
 		msgJSONs, err := rdb.MGet(ctx, keys[i:i+batch]...).Result()
 		if err != nil {
 			log.Println("rdb.MGet", err)
