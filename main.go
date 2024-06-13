@@ -137,7 +137,7 @@ func searchPosts(rdb *redis.Client, s string) ([]Message, error) {
 			s := msgJSON.(string)
 			err := json.Unmarshal([]byte(s), &msg)
 			if err != nil {
-				log.Println("json.Unmarshal", err, s)
+				log.Println("json.Unmarshal", err)
 			}
 
 			for _, m := range msgs {
