@@ -72,7 +72,7 @@ func main() {
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 		}
-		return c.SendString(fmt.Sprintf(`{ "searched": %d, "messages": %s }`, searched, msgs))
+		return c.SendString(fmt.Sprintf(`{ "searched": %d, "messages": %s }`, searched, jsonData))
 	})
 
 	port := os.Getenv("PORT")
