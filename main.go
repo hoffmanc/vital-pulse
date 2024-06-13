@@ -130,7 +130,7 @@ func searchPosts(rdb *redis.Client, s string) ([]Message, int, error) {
 		msgJSONs, err := rdb.MGet(ctx, keys[i:i+batch]...).Result()
 		if err != nil {
 			log.Println("rdb.MGet", err)
-			return msgs, err
+			return msgs, 0, err
 		}
 
 		for _, msgJSON := range msgJSONs {
@@ -153,5 +153,5 @@ func searchPosts(rdb *redis.Client, s string) ([]Message, int, error) {
 		}
 		i += 100
 	}
-	return msgs, nil
+	return msgs, int(i), nil
 }
