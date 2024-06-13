@@ -1,15 +1,24 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/url"
 	"os"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 	fiber "github.com/gofiber/fiber/v2"
 	"golang.org/x/net/context"
 )
+
+type Message struct {
+	Id         string    `json:"id"`
+	Body       string    `json:"body"`
+	Subject    string    `json:"subject"`
+	ReceivedAt time.Time `json:"receivedAt"`
+}
 
 func main() {
 	app := fiber.New()
@@ -22,7 +31,14 @@ func main() {
 	api := app.Group("/api/v1")
 
 	api.Post("/posts", func(c *fiber.Ctx) error {
-		err := rdb.Set(ctx, "email", c.Body(), 0).Err()
+		msg := Message{}
+		err := json.Unmarshal(c.Body(), &msg)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		}
+		date := &msg.ReceivedAt
+		key := fmt.Sprintf("%s:%s", date.Format(time.UnixDate), msg.Id)
+		err = rdb.Set(ctx, key, msg.Body, 0).Err()
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 		}
