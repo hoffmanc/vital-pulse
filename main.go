@@ -35,6 +35,7 @@ func main() {
 		msg := Message{}
 		err := json.Unmarshal(c.Body(), &msg)
 		if err != nil {
+			log.Println(err)
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 		}
 
@@ -42,6 +43,7 @@ func main() {
 		key := fmt.Sprintf("%s:%s", date.Format(time.UnixDate), msg.Id)
 		err = rdb.SetEX(ctx, key, msg.Body, 24*time.Hour).Err()
 		if err != nil {
+			log.Println(err)
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 		}
 
