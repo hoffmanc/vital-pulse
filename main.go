@@ -36,9 +36,10 @@ func main() {
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 		}
+
 		date := &msg.ReceivedAt
 		key := fmt.Sprintf("%s:%s", date.Format(time.UnixDate), msg.Id)
-		err = rdb.Set(ctx, key, msg.Body, 0).Err()
+		err = rdb.SetEX(ctx, key, msg.Body, 24*time.Hour).Err()
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 		}
