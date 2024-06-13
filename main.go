@@ -109,12 +109,14 @@ func searchPosts(rdb *redis.Client, s string) ([]Message, error) {
 
 	ptn, err := regexp.Compile(s)
 	if err != nil {
+		log.Println("regexp.Compile", err)
 		return msgs, err
 	}
 
 	ctx := context.Background()
 	keys, err := rdb.Keys(ctx, "2024*").Result()
 	if err != nil {
+		log.Println("rdb.Keys", err)
 		return msgs, err
 	}
 
@@ -126,6 +128,7 @@ func searchPosts(rdb *redis.Client, s string) ([]Message, error) {
 		}
 		msgJSONs, err := rdb.MGet(ctx, keys[i:i+batch]...).Result()
 		if err != nil {
+			log.Println("rdb.MGet", err)
 			return msgs, err
 		}
 
@@ -133,6 +136,7 @@ func searchPosts(rdb *redis.Client, s string) ([]Message, error) {
 			var msg Message
 			err := json.Unmarshal([]byte(msgJSON.(string)), &msg)
 			if err != nil {
+				log.Println("json.Unmarshal", err)
 				return msgs, err
 			}
 
