@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -48,12 +49,10 @@ func main() {
 	})
 
 	api.Get("/posts", func(c *fiber.Ctx) error {
-		post, err := rdb.Get(ctx, "email").Result()
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
-		}
+		ctx := context.Background()
+		keys := rdb.Keys(ctx, "2024*")
 
-		return c.SendString(post)
+		return c.SendString(strings.Join(keys))
 	})
 
 	port := os.Getenv("PORT")
