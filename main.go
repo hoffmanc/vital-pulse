@@ -50,7 +50,7 @@ func main() {
 
 	api.Get("/posts", func(c *fiber.Ctx) error {
 		ctx := context.Background()
-		keys, err := rdb.Keys(ctx, "2024*").Result()
+		keys, err := rdb.Keys(ctx, "*").Result()
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 		}
