@@ -40,7 +40,7 @@ func main() {
 		}
 
 		date := &msg.ReceivedAt
-		key := fmt.Sprintf("%s:%s", date.Format(time.UnixDate), msg.Id)
+		key := fmt.Sprintf("%s:%s", date.Format(time.RFC3339), msg.Id)
 		err = rdb.SetEX(ctx, key, msg.Body, 24*time.Hour).Err()
 		if err != nil {
 			log.Println(err)
