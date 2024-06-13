@@ -120,7 +120,11 @@ func searchPosts(rdb *redis.Client, s string) ([]Message, error) {
 
 	var i int64 = 0
 	for {
-		msgJSONs, err := rdb.MGet(ctx, keys[i:i+100]...).Result()
+		var batch int64 = 100
+		if len(keys[i:]) < int(batch) {
+			batch = int64(len(keys[i:]))
+		}
+		msgJSONs, err := rdb.MGet(ctx, keys[i:i+batch]...).Result()
 		if err != nil {
 			return msgs, err
 		}
@@ -139,7 +143,7 @@ func searchPosts(rdb *redis.Client, s string) ([]Message, error) {
 			}
 		}
 
-		if len(msgs)%100 != 0 {
+		if batch < 100 {
 			break
 		}
 		i += 100
