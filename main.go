@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -88,4 +89,34 @@ func initRdb() (*redis.Client, context.Context) {
 	}
 
 	return rdb, ctx
+}
+
+func searchPosts(rdb *redis.Client, s string) []Message {
+	ptn, err := regexp.Compile(s)
+	if err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).SendString(err.Error())
+	}
+
+	ctx := context.Background()
+	msgs := []Message{}
+	var i int64 = 0
+	for {
+		msgJSON, _ := rdb.GetRange(ctx, "2024*", i, i+100).Result()
+		var msg Message
+		err := json.Unmarshal([]byte(msgJSON), &msg)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		}
+
+		for _, m := range msgs {
+			if ptn.MatchString(m.Body) {
+				msgs = append(msgs, m)
+			}
+		}
+
+		if len(msgs) < 100 {
+			break
+		}
+		i += 100
+	}
 }
