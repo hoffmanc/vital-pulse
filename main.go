@@ -18,7 +18,7 @@ type Message struct {
 	Id         string    `json:"id"`
 	Body       string    `json:"body"`
 	Subject    string    `json:"subject"`
-	ReceivedAt time.Time `json:"receivedAt"`
+	ReceivedAt GmailTime `json:"receivedAt"`
 }
 
 func main() {
