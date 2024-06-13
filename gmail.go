@@ -29,8 +29,6 @@ func (t *GmailTime) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("\"%s\"", t.Time.Format(gmailLayout))), nil
 }
 
-var nilTime = (time.Time{}).UnixNano()
-
 func (t *GmailTime) IsSet() bool {
 	return !t.IsZero()
 }

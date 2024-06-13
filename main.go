@@ -62,6 +62,19 @@ func main() {
 		return c.SendString(strings.Join(keys, ","))
 	})
 
+	api.Get("/search", func(c *fiber.Ctx) error {
+		msgs, err := searchPosts(rdb, c.Query("search", ""))
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		}
+
+		jsonData, err := json.Marshal(msgs)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		}
+		return c.SendString(string(jsonData))
+	})
+
 	port := os.Getenv("PORT")
 	log.Fatal(app.Listen(fmt.Sprintf(":%s", port)))
 }
@@ -91,21 +104,22 @@ func initRdb() (*redis.Client, context.Context) {
 	return rdb, ctx
 }
 
-func searchPosts(rdb *redis.Client, s string) []Message {
+func searchPosts(rdb *redis.Client, s string) ([]Message, error) {
+	msgs := []Message{}
+
 	ptn, err := regexp.Compile(s)
 	if err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).SendString(err.Error())
+		return msgs, err
 	}
 
 	ctx := context.Background()
-	msgs := []Message{}
 	var i int64 = 0
 	for {
 		msgJSON, _ := rdb.GetRange(ctx, "2024*", i, i+100).Result()
 		var msg Message
 		err := json.Unmarshal([]byte(msgJSON), &msg)
 		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+			return msgs, err
 		}
 
 		for _, m := range msgs {
@@ -119,4 +133,5 @@ func searchPosts(rdb *redis.Client, s string) []Message {
 		}
 		i += 100
 	}
+	return msgs, nil
 }
