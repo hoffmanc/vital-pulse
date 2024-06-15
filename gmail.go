@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"time"
 )
@@ -22,6 +23,7 @@ func (t *GmailTime) UnmarshalJSON(b []byte) error {
 	var err error
 	t.Time, err = time.Parse(gmailLayout, s)
 	if err != nil {
+		log.Println(err)
 		t.Time, err = time.Parse(gmailLayout2, s)
 	}
 	return err
