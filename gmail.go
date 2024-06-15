@@ -13,10 +13,10 @@ type GmailTime struct {
 
 func (t *GmailTime) UnmarshalJSON(b []byte) error {
 	gmailLayouts := []string{
-		"Date: Thu, 02 Jan 2006 15:04:05 -0700",
-		"Thu, 02 Jan 2006 15:04:05 -0700",
-		"Date: Thu, 02 Jan 2006 15:04:05 MST",
-		"Thu, 02 Jan 2006 15:04:05 MST",
+		"Date: Mon, 02 Jan 2006 15:04:05 -0700",
+		"Mon, 02 Jan 2006 15:04:05 -0700",
+		"Date: Mon, 02 Jan 2006 15:04:05 MST",
+		"Mon, 02 Jan 2006 15:04:05 MST",
 	}
 
 	s := strings.Trim(string(b), "\"")
@@ -40,7 +40,7 @@ func (t *GmailTime) MarshalJSON() ([]byte, error) {
 	if t.Time.IsZero() {
 		return []byte("null"), nil
 	}
-	return []byte(fmt.Sprintf("\"%s\"", t.Time.Format("Thu, 02 Jan 2006 15:04:05 MST"))), nil
+	return []byte(fmt.Sprintf("\"%s\"", t.Time.Format("Mon, 02 Jan 2006 15:04:05 MST"))), nil
 }
 
 func (t *GmailTime) IsSet() bool {
