@@ -16,7 +16,7 @@ func searchPosts(rdb *redis.Client, search string) (int, []Message, int, error) 
 	keys, err := rdb.Keys(ctx, "*").Result()
 	if err != nil {
 		log.Println("rdb.Keys", err)
-		return msgs, 0, err
+		return len(keys), msgs, 0, err
 	}
 
 	var i int64 = 0
@@ -30,7 +30,7 @@ func searchPosts(rdb *redis.Client, search string) (int, []Message, int, error) 
 		msgJSONs, err := rdb.MGet(ctx, keys[i:i+batch]...).Result()
 		if err != nil {
 			log.Println("rdb.MGet", err)
-			return msgs, 0, err
+			return len(keys), msgs, 0, err
 		}
 
 		for _, msgJSON := range msgJSONs {
