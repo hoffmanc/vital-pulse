@@ -26,6 +26,8 @@ func main() {
 	app := fiber.New()
 	rdb, ctx := initRdb()
 
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
