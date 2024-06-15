@@ -15,6 +15,7 @@ func (t *GmailTime) UnmarshalJSON(b []byte) error {
 	gmailLayouts := []string{
 		"Date: Thu, 02 Jan 2006 15:04:05 -0700",
 		"Thu, 02 Jan 2006 15:04:05 -0700",
+		"Date: Thu, 02 Jan 2006 15:04:05 MST",
 		"Thu, 02 Jan 2006 15:04:05 MST",
 	}
 
