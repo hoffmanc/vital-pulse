@@ -62,7 +62,7 @@ func main() {
 	})
 
 	api.Get("/search", func(c *fiber.Ctx) error {
-		msgs, searched, err := searchPosts(rdb, c.Query("search", ""))
+		all, msgs, searched, err := searchPosts(rdb, c.Query("search", ""))
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 		}
@@ -71,7 +71,7 @@ func main() {
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 		}
-		return c.SendString(fmt.Sprintf(`{ "searched": %d, "messages": %s }`, searched, jsonData))
+		return c.SendString(fmt.Sprintf(`{ "total_keys": %d, "searched": %d, "messages": %s }`, searched, jsonData))
 	})
 
 	port := os.Getenv("PORT")

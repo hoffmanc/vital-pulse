@@ -9,7 +9,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-func searchPosts(rdb *redis.Client, search string) ([]Message, int, error) {
+func searchPosts(rdb *redis.Client, search string) (int, []Message, int, error) {
 	msgs := []Message{}
 
 	ctx := context.Background()
@@ -53,5 +53,5 @@ func searchPosts(rdb *redis.Client, search string) ([]Message, int, error) {
 		}
 		i += 100
 	}
-	return msgs, int(i), nil
+	return len(keys), msgs, int(i), nil
 }
