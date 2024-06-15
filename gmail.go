@@ -7,24 +7,30 @@ import (
 	"time"
 )
 
-const gmailLayout = "Date: Thu, 02 Jan 2006 15:04:05 -0700"
-const gmailLayout2 = "Thu, 02 Jan 2006 15:04:05 -0700"
-
 type GmailTime struct {
 	time.Time
 }
 
 func (t *GmailTime) UnmarshalJSON(b []byte) error {
+	gmailLayouts := []string{
+		"Date: Thu, 02 Jan 2006 15:04:05 -0700",
+		"Thu, 02 Jan 2006 15:04:05 -0700",
+		"Thu, 02 Jan 2006 15:04:05 MST",
+	}
+
 	s := strings.Trim(string(b), "\"")
 	if s == "null" {
 		t.Time = time.Time{}
 		return nil
 	}
 	var err error
-	t.Time, err = time.Parse(gmailLayout, s)
-	if err != nil {
+
+	for _, layout := range gmailLayouts {
+		t.Time, err = time.Parse(layout, s)
+		if err == nil {
+			break
+		}
 		log.Println(err)
-		t.Time, err = time.Parse(gmailLayout2, s)
 	}
 	return err
 }
