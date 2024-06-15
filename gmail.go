@@ -39,7 +39,7 @@ func (t *GmailTime) MarshalJSON() ([]byte, error) {
 	if t.Time.IsZero() {
 		return []byte("null"), nil
 	}
-	return []byte(fmt.Sprintf("\"%s\"", t.Time.Format(gmailLayout))), nil
+	return []byte(fmt.Sprintf("\"%s\"", t.Time.Format("Thu, 02 Jan 2006 15:04:05 MST"))), nil
 }
 
 func (t *GmailTime) IsSet() bool {
