@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const gmailLayout = "Date: Thu, 02 Jan 2006 15:04:05 -0700"
+const gmailLayout = "Thu, 02 Jan 2006 15:04:05 -0700"
 
 type GmailTime struct {
 	time.Time
