@@ -1,13 +1,13 @@
 # Config file for Air (https://github.com/cosmtrek/air)
 [build]
   bin = "tmp/main" # Binary name
-  cmd = "go build -o tmp/main main.go" # Command to build your app
+  cmd = "go build -buildvcs=false -o tmp/main ./..." # Command to build your app
   include_ext = ["go", "tpl", "tmpl", "html"] # Extensions to watch
   exclude_dir = ["vendor", "tmp", ".git", "node_modules"] # Directories to ignore
   exclude_file = [] # Specific files to ignore
   follow_symlink = true # Follow symlinks
   full_reload = false # Enable full reload
-  include_dir = [""] # Directories to watch
+  include_dir = ["."] # Directories to watch
 
 [log]
   level = "debug"

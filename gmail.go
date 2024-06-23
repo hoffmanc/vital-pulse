@@ -29,7 +29,8 @@ func (t *GmailTime) UnmarshalJSON(b []byte) error {
 	for _, layout := range gmailLayouts {
 		t.Time, err = time.Parse(layout, s)
 		if err == nil {
-			break
+			log.Printf("Successfully parsed %s to %s", s, t.Time)
+			return nil
 		}
 		log.Println(err)
 	}

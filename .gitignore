@@ -1,3 +1,8 @@
 tmp/
-n8n/ssl
+ssl/request.csr
+ssl/server.crt
+ssl/server.csr
+ssl/server.key
+ssl/old
 *.pem
+mosquitto.db

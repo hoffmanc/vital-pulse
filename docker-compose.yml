@@ -8,12 +8,14 @@ services:
       - "3000:3000"
     depends_on:
       - redis
+      - mosquitto
     volumes:
       - ".:/app"
     environment:
-      REDISCLOUD_URL: "redis://redis:6379"
-      REDIS_PORT: 6379
+      REDIS_URL: "redis://redis:6379"
       PORT: 3000
+      MQTT_HOST: mosquitto
+      MQTT_PORT: 1883
     restart: unless-stopped
 
   redis:
@@ -22,5 +24,56 @@ services:
       - "6379:6379"
     restart: unless-stopped
 
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    volumes:
+      - "./mosquitto.conf:/mosquitto/config/mosquitto.conf"
+      - "mosquitto-data:/mosquitto/data"
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      - DB_TYPE=sqlite
+      - DB_SQLITE_VACUUM_ON_STARTUP=true
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=foo
+      - N8N_BASIC_AUTH_PASSWORD=bar
+      - N8N_HOST=localhost
+      - N8N_PATH=/n8n
+      - N8N_PORT=5678
+      - WEBHOOK_URL=http://localhost/n8n
+      # - N8N_PROTOCOL=https
+      # - N8N_PORT=433
+    volumes:
+      - n8n-data:/home/node/.n8n
+    restart: unless-stopped
+
+  envoy:
+    image: envoyproxy/envoy:v1.20.0
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+      - ./ssl:/etc/envoy/ssl  # Mount the directory containing your SSL certificate and key
+    ports:
+      - "80:80"
+      - "443:443"
+      - "9901:9901"
+    depends_on:
+      - n8n
+      - app
+    restart: unless-stopped
+
+  ghost:
+    image: ghost:latest
+    ports:
+      - "2368:2368"
+    restart: unless-stopped
+
+
 volumes:
   n8n-data:
+  mosquitto-data:

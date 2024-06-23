@@ -14,3 +14,5 @@ WORKDIR /app
 # Create the `public` dir and copy all the assets into it
 RUN mkdir ./static
 COPY ./static ./static
+
+RUN apt update && apt install -y git

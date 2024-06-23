@@ -18,12 +18,22 @@ static_resources:
             - name: local_service
               domains:
               - "*"
-              routes:
+              routes: &routes
               - match:
-                  prefix: "/"
+                  prefix: "/n8n"
                 route:
                   cluster: n8n_cluster
-          http_filters:
+                  prefix_rewrite: "/"
+              - match:
+                  prefix: "/api/v1"
+                route:
+                  cluster: app_cluster
+              - match:
+                  prefix: "/blog"
+                route:
+                  cluster: ghost_cluster
+                  prefix_rewrite: "/"
+          http_filters: &filters
           - name: envoy.filters.http.router
   - name: listener_https
     address:
@@ -43,13 +53,8 @@ static_resources:
             - name: local_service
               domains:
               - "*"
-              routes:
-              - match:
-                  prefix: "/"
-                route:
-                  cluster: n8n_cluster
-          http_filters:
-          - name: envoy.filters.http.router
+              routes: *routes
+          http_filters: *filters
       transport_socket:
         name: envoy.transport_sockets.tls
         typed_config:
@@ -75,6 +80,32 @@ static_resources:
               socket_address:
                 address: n8n
                 port_value: 5678
+  - name: app_cluster
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: app_cluster
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: app
+                port_value: 3000
+  - name: ghost_cluster
+      connect_timeout: 0.25s
+      type: LOGICAL_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: ghost_cluster
+        endpoints:
+        - lb_endpoints:
+          - endpoint:
+              address:
+                socket_address:
+                  address: ghost
+                  port_value: 2368
 
 admin:
   access_log_path: "/tmp/admin_access.log"
