@@ -2,3 +2,9 @@
 FROM ghost:latest
 
 RUN apt update && apt install -y sqlite3
+
+RUN mkdir /db
+
+RUN sqlite3 /db/ghost.sqlite3 "CREATE TABLE your_table_name (id INTEGER);"
+
+RUN chown -R node /db
