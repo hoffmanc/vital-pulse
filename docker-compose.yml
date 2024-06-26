@@ -68,12 +68,21 @@ services:
     restart: unless-stopped
 
   ghost:
-    image: ghost:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.ghost
     ports:
       - "2368:2368"
     restart: unless-stopped
+    environment:
+      url: http://localhost/blog
+      database__client: sqlite3
+      database__connection__filename: /db/ghost.sqlite3
 
+    volumes:
+      - ghost-data:/db
 
 volumes:
   n8n-data:
   mosquitto-data:
+  ghost-data:

@@ -32,7 +32,7 @@ static_resources:
                   prefix: "/blog"
                 route:
                   cluster: ghost_cluster
-                  prefix_rewrite: "/"
+                  # prefix_rewrite: "/"
           http_filters: &filters
           - name: envoy.filters.http.router
   - name: listener_https
@@ -94,18 +94,18 @@ static_resources:
                 address: app
                 port_value: 3000
   - name: ghost_cluster
-      connect_timeout: 0.25s
-      type: LOGICAL_DNS
-      lb_policy: ROUND_ROBIN
-      load_assignment:
-        cluster_name: ghost_cluster
-        endpoints:
-        - lb_endpoints:
-          - endpoint:
-              address:
-                socket_address:
-                  address: ghost
-                  port_value: 2368
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: ghost_cluster
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: ghost
+                port_value: 2368
 
 admin:
   access_log_path: "/tmp/admin_access.log"
