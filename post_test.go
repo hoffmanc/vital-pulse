@@ -12,7 +12,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-// TestCreateMessage tests the CreateMessage function.
+// TestCreate tests the CreateMessage function.
 func TestCreate(t *testing.T) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
